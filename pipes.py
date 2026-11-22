@@ -1,4 +1,7 @@
+import logging
 from functools import wraps
+
+logger = logging.getLogger(__name__)
 
 
 def main():
@@ -40,10 +43,10 @@ class Pipe:
             self.name = self.fn.__name__
             self.broadcast = broadcast
             wraps(fn)(self)
-            print("registered function: ", self.name)
+            logger.debug("registered function: %s", self.name)
 
     def __ror__(self, other):
-        print("__ror__:", self.name, "other:", other, "-", type(other))
+        logger.debug("__ror__: %s other: %s - %s", self.name, other, type(other))
         if self.fn is None:
             raise NotImplementedError
 
@@ -64,19 +67,17 @@ class Pipe:
         return self.fn(other)
 
     def __ior__(self, other):
-        print(
-            "__ior__ called for: ",
+        logger.debug(
+            "__ior__ called for: %s with other: %s - %s",
             self.name,
-            " with other: ",
             other,
-            " - ",
             type(other),
         )
         return Pipe(lambda x: other(self.fn(x)))
 
     # this is not needed anymore
     def __or__(self, other):
-        print("__or__:", self.name, "other:", other, "-", type(other))
+        logger.debug("__or__: %s other: %s - %s", self.name, other, type(other))
         if isinstance(other, Pipe):
             return Pipe(lambda x: other(self.fn(x)))
         elif callable(other):
@@ -87,7 +88,7 @@ class Pipe:
     # to call it like a function
 
     def __call__(self, *args, **kwargs):
-        print("__call__ called for: ", self.name, " with args: ", args)
+        logger.debug("__call__ called for: %s with args: %s", self.name, args)
         # set up broadcast function
         if self.fn is None:
             fn = args[0]
@@ -108,4 +109,5 @@ def baz(name: str) -> str:
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.DEBUG, format="%(levelname)s %(name)s: %(message)s")
     main()
