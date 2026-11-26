@@ -10,6 +10,11 @@ dependencies = []
 dev = [
     "pytest>=9.0.1",
 ]
+examples = [
+    "numpy>=2.5.5",
+    "pandas>=3.1.1",
+    "pandas-stubs>=3.1.0.261029",
+]
 
 [tool.basedpyright]
 typeCheckingMode = "basic"
